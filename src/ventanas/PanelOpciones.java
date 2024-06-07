@@ -22,26 +22,32 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
 /**
- *
- * @author Daniel
+ * Panel de opciones para realizar operaciones en la cuenta.
  */
 public class PanelOpciones extends javax.swing.JPanel {
 
     /**
      * Creates new form PanelOpciones
+     * 
+     * @param gestionador Gestor de cuenta asociado al cajero.
+     * @param panelPrincipal Ventana principal del cajero.
      */
+    
     public PanelOpciones(GestorCuenta gestionador, JFrame panelPrincipal) {
         initComponents();
+        
+        // Configuración inicial del panel principal
         panelPrincipal.getContentPane().removeAll();
         panelPrincipal.getContentPane().add(this, BorderLayout.CENTER);
         panelPrincipal.getContentPane().revalidate();
         panelPrincipal.getContentPane().repaint();
         panelPrincipal.pack();
         
-        
+        // Configuración de la tabla de eventos
         DefaultTableModel modeloTabla = (DefaultTableModel) jtRegistro.getModel();
         TableColumnModel modeloColumna = jtRegistro.getColumnModel();
         
+        // Configuración del ComboBox de selección de cuenta
         jcbSeleccionarCuenta.setModel(new DefaultComboBoxModel(gestionador.getCuentas()));
         jcbSeleccionarCuenta.setSelectedIndex(EstadoComboBox.getIndiceSeleccionado());
         Cuenta cuenta = (Cuenta) jcbSeleccionarCuenta.getSelectedItem();
@@ -52,6 +58,7 @@ public class PanelOpciones extends javax.swing.JPanel {
         modeloColumna.getColumn(3).setHeaderValue("Saldo"+ "("+gestionador.getDivisa()+")");
         actualizarTabla(eventos, modeloTabla);
         
+        // Acción al cambiar de cuenta en el ComboBox
         jcbSeleccionarCuenta.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -70,82 +77,81 @@ public class PanelOpciones extends javax.swing.JPanel {
         });
        
 
+        // Acción del botón "Consultar Saldo"
         btnConsultarSaldo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 PanelConsultarSaldo panelConsultarSaldo = new PanelConsultarSaldo(gestionador, PanelOpciones.this, modeloTabla, panelPrincipal);
             }
-
         });
 
+        // Acción del botón "Retirar"
         btnRetirar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                PanelDivisaRetirar panelDepositarDivisa = new PanelDivisaRetirar(gestionador, PanelOpciones.this, modeloTabla, panelPrincipal);
+                PanelRetirar panelRetirar = new PanelRetirar(gestionador.getDivisa(), gestionador, PanelOpciones.this, modeloTabla, panelPrincipal);
             }
-
         });
 
+        // Acción del botón "Depositar"
         btnDepositar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                PanelDivisaDepositar panelDepositarDivisa = new PanelDivisaDepositar(gestionador, PanelOpciones.this, modeloTabla, panelPrincipal);
-
+                PanelDepositar panelDepositar = new PanelDepositar(gestionador.getDivisa(), gestionador, PanelOpciones.this, modeloTabla, panelPrincipal);
             }
-
         });
 
+        // Acción del botón "Transferir"
         btnTransferir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                PanelDivisaTransferir panelDepositarDivisa = new PanelDivisaTransferir(gestionador, PanelOpciones.this, modeloTabla, panelPrincipal);
+                PanelTransferir panelTransferir = new PanelTransferir(gestionador.getDivisa(), gestionador, PanelOpciones.this, modeloTabla, panelPrincipal);
             }
-
         });
 
+        // Acción del botón "Cambiar Contraseña"
         btnCambiarContrasena.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 PanelCambioContrasena panelCambiarContrasena = new PanelCambioContrasena(gestionador, PanelOpciones.this, modeloTabla, panelPrincipal);
             }
         });
 
+        // Acción del botón "Crear Cuenta Adicional"
         btnCrearCuentaAdicional.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 PanelCrearCuentaAdicional panelCrearCuentaAdicional = new PanelCrearCuentaAdicional(gestionador, PanelOpciones.this, modeloTabla, panelPrincipal);
-
             }
-
         });
 
+        // Acción del botón "Salir"
         btnSalir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                PanelSesionInicio principal = new PanelSesionInicio(gestionador, panelPrincipal);
-                panelPrincipal.add(principal, BorderLayout.PAGE_START);
+                PanelSesionInicio panelSesionInicio = new PanelSesionInicio(gestionador, panelPrincipal);
+                panelPrincipal.add(panelSesionInicio, BorderLayout.PAGE_START);
             }
         });
-
     }
     
+    /**
+     * Actualiza la tabla de eventos con la lista de eventos proporcionada.
+     * 
+     * @param eventos Lista de eventos a mostrar en la tabla.
+     * @param modeloTabla Modelo de tabla donde se mostrarán los eventos.
+     */
     public void actualizarTabla(List<Evento> eventos, DefaultTableModel modeloTabla){
-        
         for (int i = 0; i < eventos.size(); i++) {
-                        Evento evento = eventos.get(i);
-                        String[] filaEvento = new String[4];
-                        filaEvento[0] = evento.getFecha();
-                        filaEvento[1] = evento.getDescripcion();
-                        filaEvento[2] = String.format("%.2f",Double.parseDouble(evento.getMonto()));
-                        filaEvento[3] = String.format("%.2f",Double.parseDouble(evento.getSaldo()));
-                        modeloTabla.addRow(filaEvento);
-                    }
-                    EstadoComboBox.setIndiceSeleccionado(jcbSeleccionarCuenta.getSelectedIndex());
+            Evento evento = eventos.get(i);
+            String[] filaEvento = new String[4];
+            filaEvento[0] = evento.getFecha();
+            filaEvento[1] = evento.getDescripcion();
+            filaEvento[2] = String.format("%.2f", Double.parseDouble(evento.getMonto()));
+            filaEvento[3] = String.format("%.2f", Double.parseDouble(evento.getSaldo()));
+            modeloTabla.addRow(filaEvento);
+        }
+        EstadoComboBox.setIndiceSeleccionado(jcbSeleccionarCuenta.getSelectedIndex());
     }
 
     /**
@@ -154,7 +160,7 @@ public class PanelOpciones extends javax.swing.JPanel {
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
@@ -350,10 +356,10 @@ public class PanelOpciones extends javax.swing.JPanel {
         );
 
         add(jPanel2, java.awt.BorderLayout.SOUTH);
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
     private javax.swing.JButton btnCambiarContrasena;
     private javax.swing.JButton btnConsultarSaldo;
     private javax.swing.JButton btnCrearCuentaAdicional;
@@ -372,5 +378,5 @@ public class PanelOpciones extends javax.swing.JPanel {
     private javax.swing.JLabel lblNombreTitular;
     private javax.swing.JLabel lblSeleccionarCuenta;
     private javax.swing.JLabel lblTitular;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration                   
 }
