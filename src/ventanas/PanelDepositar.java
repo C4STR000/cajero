@@ -21,67 +21,85 @@ import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
 /**
- *
- * @author Daniel
+ * Panel para realizar depósitos en una divisa específica.
  */
 public class PanelDepositar extends javax.swing.JPanel {
 
     /**
      * Creates new form PanelDepositar
+     * 
+     * @param divisa          Divisa en la que se realizará el depósito
+     * @param gestionador     Objeto GestorCuenta que gestiona la cuenta del usuario
+     * @param panelOpciones   Contenedor donde se muestra el panel actual
+     * @param registro        Modelo de tabla donde se registra la información de eventos
+     * @param panelPrincipal  JFrame principal de la aplicación
      */
     public PanelDepositar(String divisa, GestorCuenta gestionador, Container panelOpciones, DefaultTableModel registro, JFrame panelPrincipal) {
         initComponents();
+
+        // Ajustes en el contenedor de opciones
         panelOpciones.remove(1);
         panelOpciones.add(this, BorderLayout.NORTH);
         panelOpciones.revalidate();
         panelOpciones.repaint();
         panelPrincipal.pack();
+        
+        // Establecer textos de la interfaz según la divisa y el saldo disponible
         lblDivisa.setText(divisa);
         lblMonto.setText(String.format("%.2f", Double.parseDouble(gestionador.saldoDisponible())));
         lblDivisaSaldo.setText(gestionador.getDivisa());
 
+        // Acción del botón para realizar el depósito
         btnDepositar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                registro.setRowCount(0);
-                String monto = jtfMonto.getText();
+                registro.setRowCount(0); // Limpiar la tabla de eventos
 
+                String monto = jtfMonto.getText();
                 if (Double.parseDouble(monto) > 0) {
+                    // Realizar el depósito
                     gestionador.depositar(divisa.toLowerCase(), Double.parseDouble(monto));
                     double montoConvertido = gestionador.getMontoConvertido(divisa.toLowerCase(), Double.parseDouble(monto));
-       
-                    gestionador.crearEvento(new Evento(gestionador.getNroCuenta(), "Se realizó un deposito.", Double.toString(montoConvertido) , gestionador.saldoDisponible()));
+
+                    // Crear evento de depósito y actualizar la tabla de eventos
+                    gestionador.crearEvento(new Evento(gestionador.getNroCuenta(), "Se realizó un depósito.", Double.toString(montoConvertido), gestionador.saldoDisponible()));
                     List<Evento> eventos = gestionador.getEventos();
                     for (int i = 0; i < eventos.size(); i++) {
                         Evento evento = eventos.get(i);
                         String[] filaEvento = new String[4];
                         filaEvento[0] = evento.getFecha();
                         filaEvento[1] = evento.getDescripcion();
-                        filaEvento[2] = String.format("%.2f",Double.parseDouble(evento.getMonto()));
-                        filaEvento[3] = String.format("%.2f",Double.parseDouble(evento.getSaldo()));
+                        filaEvento[2] = String.format("%.2f", Double.parseDouble(evento.getMonto()));
+                        filaEvento[3] = String.format("%.2f", Double.parseDouble(evento.getSaldo()));
                         registro.addRow(filaEvento);
                     }
 
+                    // Actualizar saldo disponible y mostrar mensaje de éxito
                     lblMonto.setText(String.format("%.2f", Double.parseDouble(gestionador.saldoDisponible())));
-                    lblAviso.setText("Operacion Exitosa");
+                    lblAviso.setText("Operación Exitosa");
                     lblAviso.setForeground(new Color(0, 153, 0));
-                }else{
+                } else {
+                    // Mostrar mensaje de entrada inválida si el monto es negativo o cero
                     lblAviso.setText("Entrada Inválida");
                     lblAviso.setForeground(new Color(204, 0, 0));
-                    
                 }
             }
-
         });
 
+        // Acción del botón "Atrás"
         btnAtras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 PanelOpciones panelOpciones = new PanelOpciones(gestionador, panelPrincipal);
+                panelPrincipal.getContentPane().removeAll();
+                panelPrincipal.getContentPane().add(panelOpciones, BorderLayout.CENTER);
+                panelPrincipal.getContentPane().revalidate();
+                panelPrincipal.getContentPane().repaint();
+                panelPrincipal.pack();
             }
-
         });
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -89,7 +107,7 @@ public class PanelDepositar extends javax.swing.JPanel {
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         btnDepositar = new javax.swing.JButton();
@@ -215,10 +233,10 @@ public class PanelDepositar extends javax.swing.JPanel {
                     .addComponent(btnDepositar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(37, Short.MAX_VALUE))
         );
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
     private javax.swing.JButton btnAtras;
     private javax.swing.JButton btnDepositar;
     private javax.swing.JPanel jPanel1;
@@ -230,5 +248,5 @@ public class PanelDepositar extends javax.swing.JPanel {
     private javax.swing.JLabel lblMonto;
     private javax.swing.JLabel lblMontoADepositar;
     private javax.swing.JLabel lblSaldoDisponible;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration                   
 }
