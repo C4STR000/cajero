@@ -8,11 +8,16 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- *
- * @author Daniel
+ * La clase Hora proporciona métodos para obtener la hora actual formateada.
  */
 public class Hora {
-    public static String hora(){
+
+    /**
+     * Retorna la hora actual formateada como "yyyy/MM/dd".
+     *
+     * @return La hora actual formateada.
+     */
+    public static String hora() {
         LocalTime now = LocalTime.now();
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String horaFormateada = now.format(formato);
