@@ -5,17 +5,32 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
+/**
+ * La clase Seguridad proporciona métodos para cifrar y descifrar datos utilizando AES.
+ */
 public class Seguridad {
 
-    private static final String ALGORITMO= "AES";
-    
+    private static final String ALGORITMO = "AES";
+
+    // Clave secreta para cifrar y descifrar datos
     private static final String CLAVE_SECRETA = "miclavesecreta12";
 
+    /**
+     * Obtiene la clave secreta utilizada para cifrar y descifrar datos.
+     *
+     * @return La clave secreta como un objeto SecretKey.
+     */
     private static SecretKey getSecretKey() {
         byte[] keyBytes = CLAVE_SECRETA.getBytes();
         return new SecretKeySpec(keyBytes, ALGORITMO);
     }
 
+    /**
+     * Cifra los datos especificados utilizando AES.
+     *
+     * @param data Datos a cifrar.
+     * @return Los datos cifrados como una cadena Base64.
+     */
     public static String cifrar(String data) {
         byte[] encryptedBytes = null;
         try {
@@ -30,6 +45,12 @@ public class Seguridad {
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
+    /**
+     * Descifra los datos cifrados especificados utilizando AES.
+     *
+     * @param encryptedData Datos cifrados como una cadena Base64.
+     * @return Los datos descifrados como una cadena.
+     */
     public static String descifrar(String encryptedData) {
         byte[] decryptedBytes = null;
         try {
